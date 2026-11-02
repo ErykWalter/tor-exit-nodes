@@ -1,0 +1,27 @@
+http:
+  routers:
+    myapi-router:
+      rule: "Host(`api.yourdomain.com`)"
+      entryPoints:
+        - "websecure"
+      service: "exit-nodes-service"
+      middlewares:
+        - "api-ratelimit"
+      tls:
+        certResolver: "myresolver"
+
+  services:
+    myapi-service:
+      loadBalancer:
+        servers:
+          - url: "http://tor-exit-nodes-api:8080"
+
+  middlewares:
+    api-ratelimit:
+      rateLimit:
+        average: 100
+        burst: 50
+        period: "1s"
+        sourceCriterion:
+          ipStrategy:
+            depth: 0
